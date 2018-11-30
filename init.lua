@@ -143,7 +143,9 @@ if not (minetestd and minetestd.services.wield_redo) then -- Do once at init, in
 		end
 	})
 	minetest.register_on_leaveplayer(function(player)
-		wield_redo.player_items[player:get_player_name()]:remove() 
+		if wield_redo.player_items[player:get_player_name()] then
+			wield_redo.player_items[player:get_player_name()]:remove() 
+		end
 		wield_redo.player_items[player:get_player_name()] = nil
 	end)
 	minetest.register_craftitem("wield_redo:nothing", {
