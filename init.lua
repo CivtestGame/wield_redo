@@ -1,42 +1,74 @@
 wield_redo = {}
 wield_redo.player_items = {}
 wield_redo.handed = "Arm_Right" -- Unsupported, may implement later if this becomes more standard to the point where widely used animation mods are implementing it.
-wield_redo.toolRotate = {
-	["default:shovel_wood"] = 90,
-	["default:axe_wood"] = 0,
-	["default:sword_wood"] = -10,
-	["default:pick_wood"] = 0,
-	["farming:hoe_wood"] = 0,
+wield_redo.toolOffsets = { 
+	--[name, or group if minetest_systemd is present. DO NOT USE TABLES AS A KEY.] {rotation (pitch), vertical offset (higher numbers move downward)} 
+	["default:shovel_wood"] = {90,0},
+	["default:axe_wood"] = {-15,0},
+	["default:sword_wood"] = {-15,0},
+	["default:pick_wood"] = {-15,0},
+	["farming:hoe_wood"] = {-15,0},
 	
-	["default:shovel_stone"] = 90,
-	["default:axe_stone"] = 0,
-	["default:sword_stone"] = -10,
-	["default:pick_stone"] = 0,
-	["farming:hoe_stone"] = 0,
+	["default:shovel_stone"] = {90,0},
+	["default:axe_stone"] = {-15,0},
+	["default:sword_stone"] = {-15,0},
+	["default:pick_stone"] = {-15,0},
+	["farming:hoe_stone"] = {-15,0},
 	
-	["default:shovel_steel"] = 90,
-	["default:axe_steel"] = 0,
-	["default:sword_steel"] = -10,
-	["default:pick_steel"] = 0,
-	["farming:hoe_steel"] = 0,
+	["default:shovel_steel"] = {90,0},
+	["default:axe_steel"] = {-15,0},
+	["default:sword_steel"] = {-15,0},
+	["default:pick_steel"] = {-15,0},
+	["farming:hoe_steel"] = {-15,0},
 	
-	["default:shovel_bronze"] = 90,
-	["default:axe_bronze"] = 0,
-	["default:sword_bronze"] = -10,
-	["default:pick_bronze"] = 0,
-	["farming:hoe_bronze"] = 0,
+	["default:shovel_bronze"] = {90,0},
+	["default:axe_bronze"] = {-15,0},
+	["default:sword_bronze"] = {-15,0},
+	["default:pick_bronze"] = {-15,0},
+	["farming:hoe_bronze"] = {-15,0},
 	
-	["default:shovel_mese"] = 90,
-	["default:axe_mese"] = 0,
-	["default:sword_mese"] = -10,
-	["default:pick_mese"] = 0,
-	["farming:hoe_mese"] = 0,
+	["default:shovel_diamond"] = {90,0},
+	["default:axe_diamond"] = {-15,0},
+	["default:sword_diamond"] = {-15,0},
+	["default:pick_diamond"] = {-15,0},
+	["farming:hoe_diamond"] = {-15,0},
 	
-	["default:shovel_diamond"] = 90,
-	["default:axe_diamond"] = 0,
-	["default:sword_diamond"] = -10,
-	["default:pick_diamond"] = 0,
-	["farming:hoe_diamond"] = 0,
+	["default:shovel_mese"] = {90,0},
+	["default:axe_mese"] = {-15,0},
+	["default:sword_mese"] = {-15,0},
+	["default:pick_mese"] = {-15,0},
+	["farming:hoe_mese"] = {-15,0},
+	
+	["moreores:shovel_silver"] = {90,0},
+	["moreores:axe_silver"] = {-15,0},
+	["moreores:sword_silver"] = {-15,0},
+	["moreores:pick_silver"] = {-15,0},
+	["moreores:hoe_silver"] = {-15,0},
+	
+	["moreores:shovel_mithril"] = {90,0},
+	["moreores:axe_mithril"] = {-15,0},
+	["moreores:sword_mithril"] = {-15,0},
+	["moreores:pick_mithril"] = {-15,0},
+	["moreores:hoe_mithril"] = {-15,0},
+	
+	["mobs:pick_lava"] = {-15,0},
+	["mobs:net"] = {0,0},
+	
+	["bonemeal:bone"] = {0,0.8},
+	["default:stick"] = {0,0.8},
+	["default:stick"] = {0,0.8},
+	
+	["banners:wooden_pole"] = {0,0.8},
+	["banners:steel_pole"] = {0,0.8},
+	
+	["fancy_vend:copy_tool"] = {0,0.8},
+	
+	["ma_pops_furniture:hammer"] = {0,0.8},
+	["xdecor:hammer"] = {0,0.8},
+	
+	["mesecons_torch:mesecon_torch_on"] = {45,0},
+	
+	["default:torch"] = {45,0},
 	
 	["screwdriver:screwdriver"] = 77,
 }
@@ -50,16 +82,16 @@ wield_redo.update = function(player)
 			local itemname = item:get_name()
 			if wield_ent:get_properties().textures[1] ~= itemname then
 				wield_ent:set_properties({textures = {itemname}})
-				local yRotation = ((
-					wield_redo.toolRotate[itemname] or
-					wield_redo.toolRotate[
+				local offset = ((
+					wield_redo.toolOffsets[itemname] or
+					wield_redo.toolOffsets[
 						minetest.get_modpath("minetest_systemd") and 
-						minetestd.utils.check_item_match(itemname, wield_redo.toolRotate)
+						minetestd.utils.check_item_match(itemname, wield_redo.toolOffsets)
 					]
-					) or 35
+					) or {65, 0.8}
 				)
 				
-				wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=-0.5,y=3.6,z=2.5}, {x=90,y=yRotation,z=-90}) 
+				wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=-0.25,y=3.6+offset[2],z=2.5}, {x=90,y=offset[1],z=-90}) 
 				--Update this sometimes, as it tends to glitch out. 
 				--(Seriously, set_attach needs a SERIOUS overhaul. It's been a thorn in my side when making better_nametags, hanggliders, and now, this).
 			end
