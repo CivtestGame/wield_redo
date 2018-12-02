@@ -2,6 +2,10 @@ wield_redo = {}
 wield_redo.player_items = {}
 wield_redo.handed = "Arm_Right" -- Unsupported, may implement later if this becomes more standard to the point where widely used animation mods are implementing it.
 wield_redo.systemd = minetest.get_modpath("minetest_systemd")
+wield_redo.moveModelUp = 0
+if tonumber(string.sub(minetest.get_version().string, 1, 1)) and tonumber(string.sub(minetest.get_version().string, 1, 1)) > 4 then
+	moveModelUp = 10
+end
 wield_redo.toolOffsets = { 
 	--[name, or group if minetest_systemd is present. DO NOT USE TABLES AS A KEY.] {rotation (pitch), vertical offset (higher numbers move downward)} 
 	["default:shovel_wood"] = {90,0},
@@ -96,8 +100,10 @@ wield_redo.update = function(player)
 					]
 					) or {65, 0.8}
 				)
-				
 				wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=-0.25,y=3.6+offset[2],z=2.5}, {x=90,y=offset[1],z=-90}) 
+				if minetest.get_modpath("playeranim") then
+					player:set_bone_position(wield_redo.handed, {x = -3,  y = 5.5,  z = 0}, {x = 0, y = 0, z = 0})
+				end
 				--Update this sometimes, as it tends to glitch out. 
 				--(Seriously, set_attach needs a SERIOUS overhaul. It's been a thorn in my side when making better_nametags, hanggliders, and now, this).
 			end
@@ -107,7 +113,8 @@ wield_redo.update = function(player)
 	else
 		wield_redo.player_items[name] = minetest.add_entity(player:get_pos(), "wield_redo:item")
 		wield_redo.player_items[name]:set_properties({textures = {"wield_redo:nothing"}})
-		wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=-0.5,y=3.6,z=2.5}, {x=90,y=0,z=-90})
+		wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=0,y=0,z=0}, {x=0,y=0,z=0})
+		--wield_redo.player_items[name]:set_attach(player, "", {x=2.5,y=5.8,z=0}, {x=0,y=0,z=0})
 	end
 	
 end
@@ -115,20 +122,44 @@ end
 
 
 if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for a bone
-	--[[
-	wield_redo.do_satanic_stuff = function(player)
+	
+	wield_redo.do_satanic_stuff = function(player, bone, rotation)
+		if bone ~= wield_redo.handed then return end
 		local wieldEnt = wield_redo.player_items[player:get_player_name()]
 		if wieldEnt then
-			local bonePos, bRotate = player:get_bone_position(wield_redo.handed)
-			bonePos.y = bonePos.y - 1
-			bonePos.z = bonePos.z + 1.5
-			bonePos.x = bonePos.x + math.sin(bRotate.x)*3.5 + math.
-		
+			local offset = ((
+				wield_redo.toolOffsets[itemname] or
+				wield_redo.toolOffsets[
+					wield_redo.systemd and 
+					minetestd.utils.check_item_match(itemname, wield_redo.toolOffsets)
+				]
+				) or {65, 0.0}
+			)
+			bonePos = {x=2.8,y=2.0+wield_redo.moveModelUp,z=0}
+			local radius = 4.6
+			local forwardOffset = 2.5
+			--If you can fix my crappy trigonometry, PLEASE DO.
+			bonePos.z = bonePos.z + (math.sin(rotation.x*3.1416/180)*math.cos(rotation.y*3.1416/180))*(radius+offset[2]) + --Placement in a circle from the bone's center
+				math.cos(rotation.x*3.1416/180)*forwardOffset --Move item forward in hand
+				
+				
+			bonePos.y = bonePos.y - (math.cos(rotation.x*3.1416/180))*(radius+offset[2]) +
+				math.sin(rotation.x*3.1416/180)*forwardOffset
+				
+				
+			bonePos.x = bonePos.x + (math.sin(rotation.y*3.1416/180))*(radius+offset[2]) --Whatever this does, it's not good at it
+			
+			local bRotate = {x=-90--+rotation.y
+			,
+			y=rotation.x-offset[1]-65,
+			z=90---rotation.y
+			}
 			wieldEnt:set_attach(player, "", bonePos, bRotate)
+			
 		end
 	end
 	
-	if not (wield_redo.systemd and minetestd.services.wield_redo) then --Minetest_systemd 
+	if not (wield_redo.systemd and minetestd.services.wield_redo) then --Don't redefine this when reloaded by minetest_systemd.
 		wield_redo.hack = false 
 		minetest.register_on_joinplayer(function(player)
 			if wield_redo.hack then return end
@@ -137,14 +168,14 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 			essence_of_all_life.set_bone_position = function(self, bone, position, rotation)
 				local r = old_set_bone_position(self, bone, position, rotation)
 				if self:is_player() then 
-					wield_redo.do_satanic_stuff(self)
+					wield_redo.do_satanic_stuff(self, bone, rotation)
 				end
 				return r
 			end
 			wield_redo.hack = true
 		end)
-	end]]
-	error("Playeranim is currently incompatible with wield_redo. Sorry. If you have a solution (or if you managed to make mine work), let me know!")
+	end
+	--error("Playeranim is currently incompatible with wield_redo. Sorry. If you have a solution (or if you managed to make mine work), let me know!")
 end
 
 if not wield_redo.systemd then -- no minetest_systemd support, use default init
