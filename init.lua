@@ -1,6 +1,7 @@
 wield_redo = {}
 wield_redo.player_items = {}
 wield_redo.handed = "Arm_Right" -- Unsupported, may implement later if this becomes more standard to the point where widely used animation mods are implementing it.
+wield_redo.systemd = minetest.get_modpath("minetest_systemd")
 wield_redo.toolOffsets = { 
 	--[name, or group if minetest_systemd is present. DO NOT USE TABLES AS A KEY.] {rotation (pitch), vertical offset (higher numbers move downward)} 
 	["default:shovel_wood"] = {90,0},
@@ -51,11 +52,16 @@ wield_redo.toolOffsets = {
 	["moreores:pick_mithril"] = {-15,0},
 	["moreores:hoe_mithril"] = {-15,0},
 	
+	["group:shovel"] = {90,0}, --Someday...
+	["group:axe"] = {-15,0},
+	["group:sword"] = {-15,0},
+	["group:pickaxe"] = {-15,0},
+	["group:hoe"] = {-15,0},
+	
 	["mobs:pick_lava"] = {-15,0},
 	["mobs:net"] = {0,0},
 	
 	["bonemeal:bone"] = {0,0.8},
-	["default:stick"] = {0,0.8},
 	["default:stick"] = {0,0.8},
 	
 	["banners:wooden_pole"] = {0,0.8},
@@ -85,7 +91,7 @@ wield_redo.update = function(player)
 				local offset = ((
 					wield_redo.toolOffsets[itemname] or
 					wield_redo.toolOffsets[
-						minetest.get_modpath("minetest_systemd") and 
+						wield_redo.systemd and 
 						minetestd.utils.check_item_match(itemname, wield_redo.toolOffsets)
 					]
 					) or {65, 0.8}
@@ -122,7 +128,7 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 		end
 	end
 	
-	if not (minetestd and minetestd.services.wield_redo) then --Minetest_systemd 
+	if not (wield_redo.systemd and minetestd.services.wield_redo) then --Minetest_systemd 
 		wield_redo.hack = false 
 		minetest.register_on_joinplayer(function(player)
 			if wield_redo.hack then return end
@@ -141,7 +147,7 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 	error("Playeranim is currently incompatible with wield_redo. Sorry. If you have a solution (or if you managed to make mine work), let me know!")
 end
 
-if not minetestd then -- no minetest_systemd support, use default init
+if not wield_redo.systemd then -- no minetest_systemd support, use default init
 	wield_redo.timer = 0
 	minetest.register_globalstep(function(dtime)
 		if wield_redo.timer < 0.25 then
@@ -157,7 +163,7 @@ end
 
 
 
-if not (minetestd and minetestd.services.wield_redo) then -- Do once at init, in case of reload
+if not (wield_redo.systemd and minetestd.services.wield_redo) then -- Do once at true init, in case of reload
 
 	minetest.register_entity("wield_redo:item", {
 		visual = "wielditem",
@@ -188,7 +194,7 @@ if not (minetestd and minetestd.services.wield_redo) then -- Do once at init, in
 end
 
 
-if minetestd then
+if wield_redo.systemd then
 	if not minetestd.services.wield_redo then -- Do once if minetest_systemd is present
 		minetestd.register_service("wield_redo", {
 			start = function()
@@ -205,7 +211,7 @@ if minetestd then
 		
 		})
 	end
-	minetestd.playerctl.register_playerstep("wield_redo", {
+	minetestd.playerctl.register_playerstep("wield_redo", { -- Safe. Overwrites if reloaded
 		func = wield_redo.update,
 		save = false,
 		interval = 0.25
