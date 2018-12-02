@@ -149,7 +149,7 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 				
 				
 			bonePos.x = bonePos.x + (math.sin(rotation.y*3.1416/180))*(radius+offset[2]) --Whatever this does, it's not good at it
-			minetest.chat_send_all(rotation.x.." _ "..rotation.y.." _ "..rotation.z)
+			--minetest.chat_send_all(rotation.x.." _ "..rotation.y.." _ "..rotation.z)
 			
 			local bRotate = {x=90--+rotation.y
 			,
