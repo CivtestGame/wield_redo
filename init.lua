@@ -80,7 +80,7 @@ wield_redo.toolOffsets = {
 	
 	["default:torch"] = {45,0},
 	
-	["screwdriver:screwdriver"] = 77,
+	["screwdriver:screwdriver"] = {77,0},
 }
 wield_redo.update = function(player)
 	if minetestd and not minetestd.services.wield_redo.enabled then return end
@@ -127,16 +127,17 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 		if bone ~= wield_redo.handed then return end
 		local wieldEnt = wield_redo.player_items[player:get_player_name()]
 		if wieldEnt then
+			local itemname = player:get_wielded_item():get_name()
 			local offset = ((
 				wield_redo.toolOffsets[itemname] or
 				wield_redo.toolOffsets[
 					wield_redo.systemd and 
 					minetestd.utils.check_item_match(itemname, wield_redo.toolOffsets)
 				]
-				) or {65, 0.0}
+				) or {65, 0.8}
 			)
 			bonePos = {x=2.8,y=2.0+wield_redo.moveModelUp,z=0}
-			local radius = 4.6
+			local radius = 3.75
 			local forwardOffset = 2.5
 			--If you can fix my crappy trigonometry, PLEASE DO.
 			bonePos.z = bonePos.z + (math.sin(rotation.x*3.1416/180)*math.cos(rotation.y*3.1416/180))*(radius+offset[2]) + --Placement in a circle from the bone's center
@@ -148,10 +149,12 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 				
 				
 			bonePos.x = bonePos.x + (math.sin(rotation.y*3.1416/180))*(radius+offset[2]) --Whatever this does, it's not good at it
+			minetest.chat_send_all(rotation.x.." _ "..rotation.y.." _ "..rotation.z)
 			
-			local bRotate = {x=-90--+rotation.y
+			local bRotate = {x=90--+rotation.y
 			,
-			y=rotation.x-offset[1]-65,
+			y=offset[1]+rotation.x
+			,
 			z=90---rotation.y
 			}
 			wieldEnt:set_attach(player, "", bonePos, bRotate)
