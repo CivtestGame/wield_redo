@@ -4,7 +4,7 @@ wield_redo.handed = "Arm_Right" -- Unsupported, may implement later if this beco
 wield_redo.systemd = minetest.get_modpath("minetest_systemd")
 wield_redo.moveModelUp = 0
 if tonumber(string.sub(minetest.get_version().string, 1, 1)) and tonumber(string.sub(minetest.get_version().string, 1, 1)) > 4 then
-	moveModelUp = 10
+	wield_redo.moveModelUp = 10
 end
 wield_redo.toolOffsets = { 
 	--[name, or group if minetest_systemd is present. DO NOT USE TABLES AS A KEY.] {rotation (pitch), vertical offset (higher numbers move downward)} 
