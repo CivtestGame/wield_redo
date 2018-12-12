@@ -6,63 +6,69 @@ wield_redo.moveModelUp = 0
 if tonumber(string.sub(minetest.get_version().string, 1, 1)) and tonumber(string.sub(minetest.get_version().string, 1, 1)) > 4 then
 	wield_redo.moveModelUp = 10
 end
-wield_redo.toolOffsets = { 
-	--[name, or group if minetest_systemd is present. DO NOT USE TABLES AS A KEY.] {rotation (pitch), vertical offset (higher numbers move downward)} 
-	["default:shovel_wood"] = {90,0},
-	["default:axe_wood"] = {-15,0},
-	["default:sword_wood"] = {-15,0},
-	["default:pick_wood"] = {-15,0},
-	["farming:hoe_wood"] = {-15,0},
+wield_redo.itemOffsets = { 
+	--[name, or group/table. Tables can be used as keys to apply the same offset to multiple items.] {rotation (pitch), vertical offset (higher numbers move downward)} 
+	[{
+		"default:shovel_wood",
+		"default:shovel_stone",
+		"default:shovel_steel",
+		"default:shovel_bronze",
+		"default:shovel_diamond",
+		"default:shovel_mese",
+		"moreores:shovel_silver",
+		"moreores:shovel_mithril",
+		"group:tooltype_shovel",
+	}] = {50,0.9},
 	
-	["default:shovel_stone"] = {90,0},
-	["default:axe_stone"] = {-15,0},
-	["default:sword_stone"] = {-15,0},
-	["default:pick_stone"] = {-15,0},
-	["farming:hoe_stone"] = {-15,0},
+	[{
+		"default:axe_wood",
+		"default:axe_stone",
+		"default:axe_steel",
+		"default:axe_bronze",
+		"default:axe_diamond",
+		"default:axe_mese",
+		"moreores:axe_silver",
+		"moreores:axe_mithril",
+		"group:tooltype_axe",
+		
+	}] = {-15,0},
 	
-	["default:shovel_steel"] = {90,0},
-	["default:axe_steel"] = {-15,0},
-	["default:sword_steel"] = {-15,0},
-	["default:pick_steel"] = {-15,0},
-	["farming:hoe_steel"] = {-15,0},
+	[{
+		"default:sword_wood",
+		"default:sword_stone",
+		"default:sword_steel",
+		"default:sword_bronze",
+		"default:sword_diamond",
+		"default:sword_mese",
+		"moreores:sword_silver",
+		"moreores:sword_mithril",
+		"group:tooltype_sword",
+	}] = {-30,0.4,1.33},
 	
-	["default:shovel_bronze"] = {90,0},
-	["default:axe_bronze"] = {-15,0},
-	["default:sword_bronze"] = {-15,0},
-	["default:pick_bronze"] = {-15,0},
-	["farming:hoe_bronze"] = {-15,0},
+	[{ 
+		"default:pick_wood",
+		"default:pick_stone",
+		"default:pick_steel",
+		"default:pick_bronze",
+		"default:pick_diamond",
+		"default:pick_mese",
+		"moreores:pick_silver",
+		"moreores:pick_mithril",
+		"mobs:pick_lava",
+		"group:tooltype_pick",
+	}] = {-15,0},
+	[{
+		"farming:hoe_wood",
+		"farming:hoe_stone",
+		"farming:hoe_steel",
+		"farming:hoe_bronze",
+		"farming:hoe_diamond",
+		"farming:hoe_mese",
+		"moreores:hoe_silver",
+		"moreores:hoe_mithril",
+		"group:tooltype_hoe",
+	}] = {-15,0},
 	
-	["default:shovel_diamond"] = {90,0},
-	["default:axe_diamond"] = {-15,0},
-	["default:sword_diamond"] = {-15,0},
-	["default:pick_diamond"] = {-15,0},
-	["farming:hoe_diamond"] = {-15,0},
-	
-	["default:shovel_mese"] = {90,0},
-	["default:axe_mese"] = {-15,0},
-	["default:sword_mese"] = {-15,0},
-	["default:pick_mese"] = {-15,0},
-	["farming:hoe_mese"] = {-15,0},
-	
-	["moreores:shovel_silver"] = {90,0},
-	["moreores:axe_silver"] = {-15,0},
-	["moreores:sword_silver"] = {-15,0},
-	["moreores:pick_silver"] = {-15,0},
-	["moreores:hoe_silver"] = {-15,0},
-	
-	["moreores:shovel_mithril"] = {90,0},
-	["moreores:axe_mithril"] = {-15,0},
-	["moreores:sword_mithril"] = {-15,0},
-	["moreores:pick_mithril"] = {-15,0},
-	["moreores:hoe_mithril"] = {-15,0},
-	
-	["group:shovel"] = {90,0}, --Someday...
-	["group:axe"] = {-15,0},
-	["group:sword"] = {-15,0},
-	["group:pickaxe"] = {-15,0},
-	["group:hoe"] = {-15,0},
-	
-	["mobs:pick_lava"] = {-15,0},
 	["mobs:net"] = {0,0},
 	
 	["bonemeal:bone"] = {0,0.8},
@@ -76,14 +82,64 @@ wield_redo.toolOffsets = {
 	["ma_pops_furniture:hammer"] = {0,0.8},
 	["xdecor:hammer"] = {0,0.8},
 	
-	["mesecons_torch:mesecon_torch_on"] = {45,0},
-	
-	["default:torch"] = {45,0},
-	
 	["screwdriver:screwdriver"] = {77,0},
+	["minetest:node"] = {45, 0.8, 0.75},
 }
+
+
+wield_redo.set_item_offset = function(k, v)
+	wield_redo.itemOffsets[k] = v
+	wield_redo.update_known_items()
+end
+
+wield_redo.update_known_items = function()
+	if not wield_redo.systemd then
+		local flat = false
+		while (not flat) do --Flatten the table, because we can't use minetestd.utils.check_item_match
+			flat = true
+			for item,offset in pairs(wield_redo.itemOffsets) do
+				if type(item) == "table" then
+					for _,iname in pairs(item) do
+						wield_redo.itemOffsets[iname] = offset
+						flat = false
+					end
+					wield_redo.itemOffsets[item] = nil
+				end
+			end
+		end
+		print("Table flattened.")
+		local group
+		for item,offset in pairs(wield_redo.itemOffsets) do
+			if type(item) == "string" and string.sub(item,1,6) == "group:" then
+				group = string.sub(item,7)
+				for iname,reg in pairs(minetest.registered_items) do
+					if reg.groups[group] then
+						wield_redo.itemOffsets[iname] = offset
+					end
+				end
+				wield_redo.itemOffsets[item] = nil
+			end
+		end
+		print("Groups resolved.")
+		if wield_redo.itemOffsets["minetest:node"] then
+			for n,_ in pairs(minetest.registered_nodes) do
+				if not wield_redo.itemOffsets[n] then
+					wield_redo.itemOffsets[n] = wield_redo.itemOffsets["minetest:node"]
+				end
+			end
+			 wield_redo.itemOffsets["minetest:node"] = nil
+		end
+	end
+	
+	wield_redo.knownItems = {}
+	for item,_ in pairs( wield_redo.itemOffsets ) do
+		wield_redo.knownItems[#(wield_redo.knownItems)+1] = item
+	end
+end
+minetest.after(0,wield_redo.update_known_items)
+
 wield_redo.update = function(player)
-	if minetestd and not minetestd.services.wield_redo.enabled then return end
+	if wield_redo.systemd and not minetestd.services.wield_redo.enabled then return end
 	local name = player:get_player_name()
 	local wield_ent = wield_redo.player_items[name]
 	local item = player:get_wielded_item()
@@ -91,16 +147,17 @@ wield_redo.update = function(player)
 		if item and item:get_name() ~= "" and not item:is_empty() then
 			local itemname = item:get_name()
 			if wield_ent:get_properties().textures[1] ~= itemname then
-				wield_ent:set_properties({textures = {itemname}})
 				local offset = ((
-					wield_redo.toolOffsets[itemname] or
-					wield_redo.toolOffsets[
+					wield_redo.itemOffsets[itemname] or
+					wield_redo.itemOffsets[
 						wield_redo.systemd and 
-						minetestd.utils.check_item_match(itemname, wield_redo.toolOffsets)
+						minetestd.utils.check_item_match(itemname, wield_redo.knownItems)
 					]
-					) or {65, 0.8}
+					) or {65, 0.8, 1.0}
 				)
+				offset[3] = offset[3] or 1.0
 				wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=-0.25,y=3.6+offset[2],z=2.5}, {x=90,y=offset[1],z=-90}) 
+				wield_ent:set_properties({textures = {itemname}, visual_size = {x=0.3*offset[3], y=0.3*offset[3]}})
 				if minetest.get_modpath("playeranim") then
 					player:set_bone_position(wield_redo.handed, {x = -3,  y = 5.5,  z = 0}, {x = 0, y = 0, z = 0})
 				end
@@ -129,10 +186,10 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 		if wieldEnt then
 			local itemname = player:get_wielded_item():get_name()
 			local offset = ((
-				wield_redo.toolOffsets[itemname] or
-				wield_redo.toolOffsets[
+				wield_redo.itemOffsets[itemname] or
+				wield_redo.itemOffsets[
 					wield_redo.systemd and 
-					minetestd.utils.check_item_match(itemname, wield_redo.toolOffsets)
+					minetestd.utils.check_item_match(itemname, wield_redo.knownItems)
 				]
 				) or {65, 0.8}
 			)
@@ -240,6 +297,7 @@ if wield_redo.systemd then
 			end,
 			stop = function()
 				minetestd.playerctl.steps["wield_redo"] = nil
+				minetestd.services.wield_redo.enabled = false
 				wield_redo.players = {} -- Entities will remove themselves, effectively disabling the mod.
 			end,
 		
