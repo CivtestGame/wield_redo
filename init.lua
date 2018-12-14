@@ -223,7 +223,7 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 		wield_redo.hack = false 
 		minetest.register_on_joinplayer(function(player)
 			if wield_redo.hack then return end
-			essence_of_all_life = getmetatable(player)
+			local essence_of_all_life = getmetatable(player)
 			local old_set_bone_position = essence_of_all_life.set_bone_position 
 			essence_of_all_life.set_bone_position = function(self, bone, position, rotation)
 				local r = old_set_bone_position(self, bone, position, rotation)
