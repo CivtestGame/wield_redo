@@ -43,7 +43,7 @@ wield_redo.itemOffsets = {
 		"moreores:sword_silver",
 		"moreores:sword_mithril",
 		"group:tooltype_sword",
-	}] = {-30,0.4,1.33},
+	}] = {-30,0.4,1.33,1},
 	
 	[{ 
 		"default:pick_wood",
@@ -156,7 +156,7 @@ wield_redo.update = function(player)
 					) or {65, 0.8, 1.0}
 				)
 				offset[3] = offset[3] or 1.0
-				wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=-0.25,y=3.6+offset[2],z=2.5}, {x=90,y=offset[1],z=-90}) 
+				wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=-0.25,y=3.6+offset[2],z=2.5+(offset[4] or 0)}, {x=90,y=offset[1],z=-90}) 
 				wield_ent:set_properties({textures = {itemname}, visual_size = {x=0.3*offset[3], y=0.3*offset[3]}})
 				if minetest.get_modpath("playeranim") then
 					player:set_bone_position(wield_redo.handed, {x = -3,  y = 5.5,  z = 0}, {x = 0, y = 0, z = 0})
@@ -195,7 +195,7 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 			)
 			bonePos = {x=2.8,y=2.0+wield_redo.moveModelUp,z=0}
 			local radius = 3.75
-			local forwardOffset = 2.5
+			local forwardOffset = 2.5 + (offset[4] or 0)
 			--If you can fix my crappy trigonometry, PLEASE DO.
 			bonePos.z = bonePos.z + (math.sin(rotation.x*3.1416/180)*math.cos(rotation.y*3.1416/180))*(radius+offset[2]) + --Placement in a circle from the bone's center
 				math.cos(rotation.x*3.1416/180)*forwardOffset --Move item forward in hand
