@@ -193,7 +193,7 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 				]
 				) or {65, 0.8}
 			)
-			bonePos = {x=2.8,y=2.0+wield_redo.moveModelUp,z=0}
+			local bonePos = {x=2.8,y=2.0+wield_redo.moveModelUp,z=0}
 			local radius = 3.75
 			local forwardOffset = 2.5 + (offset[4] or 0)
 			--If you can fix my crappy trigonometry, PLEASE DO.
