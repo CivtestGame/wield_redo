@@ -17,7 +17,7 @@ wield_redo.itemOffsets = {
 		"default:shovel_mese",
 		"moreores:shovel_silver",
 		"moreores:shovel_mithril",
-		"group:tooltype_shovel",
+		"group:shovel",
 	}] = {50,0.9},
 	
 	[{
@@ -29,7 +29,7 @@ wield_redo.itemOffsets = {
 		"default:axe_mese",
 		"moreores:axe_silver",
 		"moreores:axe_mithril",
-		"group:tooltype_axe",
+		"group:axe",
 		
 	}] = {-15,0},
 	
@@ -42,7 +42,7 @@ wield_redo.itemOffsets = {
 		"default:sword_mese",
 		"moreores:sword_silver",
 		"moreores:sword_mithril",
-		"group:tooltype_sword",
+		"group:sword",
 	}] = {-30,0.4,1.33,1},
 	
 	[{ 
@@ -55,7 +55,7 @@ wield_redo.itemOffsets = {
 		"moreores:pick_silver",
 		"moreores:pick_mithril",
 		"mobs:pick_lava",
-		"group:tooltype_pick",
+		"group:pick",
 	}] = {-15,0},
 	[{
 		"farming:hoe_wood",
@@ -66,7 +66,7 @@ wield_redo.itemOffsets = {
 		"farming:hoe_mese",
 		"moreores:hoe_silver",
 		"moreores:hoe_mithril",
-		"group:tooltype_hoe",
+		"group:hoe",
 	}] = {-15,0},
 	
 	["mobs:net"] = {0,0},
