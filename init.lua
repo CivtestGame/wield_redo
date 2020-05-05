@@ -43,6 +43,8 @@ wield_redo.itemOffsets = {
 		"moreores:sword_silver",
 		"moreores:sword_mithril",
 		"group:sword",
+		"group:spear",
+		"group:club",
 	}] = {-30,0.4,1.33,1},
 	
 	[{ 
