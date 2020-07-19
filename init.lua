@@ -6,8 +6,8 @@ wield_redo.moveModelUp = 0
 if tonumber(string.sub(minetest.get_version().string, 1, 1)) and tonumber(string.sub(minetest.get_version().string, 1, 1)) > 4 then
 	wield_redo.moveModelUp = 10
 end
-wield_redo.itemOffsets = { 
-	--[name, or group/table. Tables can be used as keys to apply the same offset to multiple items.] {rotation (pitch), vertical offset (higher numbers move downward)} 
+wield_redo.itemOffsets = {
+	--[name, or group/table. Tables can be used as keys to apply the same offset to multiple items.] {rotation (pitch), vertical offset (higher numbers move downward)}
 	[{
 		"default:shovel_wood",
 		"default:shovel_stone",
@@ -18,8 +18,8 @@ wield_redo.itemOffsets = {
 		"moreores:shovel_silver",
 		"moreores:shovel_mithril",
 		"group:shovel",
-	}] = {50,0.9},
-	
+	}] = {-15,0},
+
 	[{
 		"default:axe_wood",
 		"default:axe_stone",
@@ -30,9 +30,9 @@ wield_redo.itemOffsets = {
 		"moreores:axe_silver",
 		"moreores:axe_mithril",
 		"group:axe",
-		
+
 	}] = {-15,0},
-	
+
 	[{
 		"default:sword_wood",
 		"default:sword_stone",
@@ -43,11 +43,14 @@ wield_redo.itemOffsets = {
 		"moreores:sword_silver",
 		"moreores:sword_mithril",
 		"group:sword",
-		"group:spear",
 		"group:club",
-	}] = {-30,0.4,1.33,1},
-	
-	[{ 
+	}] = {-30,0.4,1.10,1},
+
+        [{
+              "group:spear"
+        }] = {-30,0.4,1.9,1},
+
+	[{
 		"default:pick_wood",
 		"default:pick_stone",
 		"default:pick_steel",
@@ -70,20 +73,20 @@ wield_redo.itemOffsets = {
 		"moreores:hoe_mithril",
 		"group:hoe",
 	}] = {-15,0},
-	
+
 	["mobs:net"] = {0,0},
-	
+
 	["bonemeal:bone"] = {0,0.8},
 	["default:stick"] = {0,0.8},
-	
+
 	["banners:wooden_pole"] = {0,0.8},
 	["banners:steel_pole"] = {0,0.8},
-	
+
 	["fancy_vend:copy_tool"] = {0,0.8},
-	
+
 	["ma_pops_furniture:hammer"] = {0,0.8},
 	["xdecor:hammer"] = {0,0.8},
-	
+
 	["screwdriver:screwdriver"] = {77,0},
 	["minetest:node"] = {45, 0.8, 0.75},
 }
@@ -132,7 +135,7 @@ wield_redo.update_known_items = function()
 			 wield_redo.itemOffsets["minetest:node"] = nil
 		end
 	end
-	
+
 	wield_redo.knownItems = {}
 	for item,_ in pairs( wield_redo.itemOffsets ) do
 		wield_redo.knownItems[#(wield_redo.knownItems)+1] = item
@@ -152,18 +155,18 @@ wield_redo.update = function(player)
 				local offset = ((
 					wield_redo.itemOffsets[itemname] or
 					wield_redo.itemOffsets[
-						wield_redo.systemd and 
+						wield_redo.systemd and
 						minetestd.utils.check_item_match(itemname, wield_redo.knownItems)
 					]
 					) or {65, 0.8, 1.0}
 				)
 				offset[3] = offset[3] or 1.0
-				wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=-0.25,y=3.6+offset[2],z=2.5+(offset[4] or 0)}, {x=90,y=offset[1],z=-90}) 
+				wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=-0.25,y=3.6+offset[2],z=2.5+(offset[4] or 0)}, {x=90,y=offset[1],z=-90})
 				wield_ent:set_properties({textures = {itemname}, visual_size = {x=0.3*offset[3], y=0.3*offset[3]}})
 				if minetest.get_modpath("playeranim") then
 					player:set_bone_position(wield_redo.handed, {x = -3,  y = 5.5,  z = 0}, {x = 0, y = 0, z = 0})
 				end
-				--Update this sometimes, as it tends to glitch out. 
+				--Update this sometimes, as it tends to glitch out.
 				--(Seriously, set_attach needs a SERIOUS overhaul. It's been a thorn in my side when making better_nametags, hanggliders, and now, this).
 			end
 		else
@@ -175,13 +178,13 @@ wield_redo.update = function(player)
 		wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=0,y=0,z=0}, {x=0,y=0,z=0})
 		--wield_redo.player_items[name]:set_attach(player, "", {x=2.5,y=5.8,z=0}, {x=0,y=0,z=0})
 	end
-	
+
 end
 
 
 
 if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for a bone
-	
+
 	wield_redo.do_satanic_stuff = function(player, bone, rotation)
 		if bone ~= wield_redo.handed then return end
 		local wieldEnt = wield_redo.player_items[player:get_player_name()]
@@ -190,7 +193,7 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 			local offset = ((
 				wield_redo.itemOffsets[itemname] or
 				wield_redo.itemOffsets[
-					wield_redo.systemd and 
+					wield_redo.systemd and
 					minetestd.utils.check_item_match(itemname, wield_redo.knownItems)
 				]
 				) or {65, 0.8}
@@ -201,15 +204,15 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 			--If you can fix my crappy trigonometry, PLEASE DO.
 			bonePos.z = bonePos.z + (math.sin(rotation.x*3.1416/180)*math.cos(rotation.y*3.1416/180))*(radius+offset[2]) + --Placement in a circle from the bone's center
 				math.cos(rotation.x*3.1416/180)*forwardOffset --Move item forward in hand
-				
-				
+
+
 			bonePos.y = bonePos.y - (math.cos(rotation.x*3.1416/180))*(radius+offset[2]) +
 				math.sin(rotation.x*3.1416/180)*forwardOffset
-				
-				
+
+
 			bonePos.x = bonePos.x + (math.sin(rotation.y*3.1416/180))*(radius+offset[2]) --Whatever this does, it's not good at it
 			--minetest.chat_send_all(rotation.x.." _ "..rotation.y.." _ "..rotation.z)
-			
+
 			local bRotate = {x=90--+rotation.y
 			,
 			y=offset[1]+rotation.x
@@ -217,19 +220,19 @@ if minetest.get_modpath("playeranim") then -- A hack for a hack, and a bone for 
 			z=90---rotation.y
 			}
 			wieldEnt:set_attach(player, "", bonePos, bRotate)
-			
+
 		end
 	end
-	
+
 	if not (wield_redo.systemd and minetestd.services.wield_redo) then --Don't redefine this when reloaded by minetest_systemd.
-		wield_redo.hack = false 
+		wield_redo.hack = false
 		minetest.register_on_joinplayer(function(player)
 			if wield_redo.hack then return end
 			local essence_of_all_life = getmetatable(player)
-			local old_set_bone_position = essence_of_all_life.set_bone_position 
+			local old_set_bone_position = essence_of_all_life.set_bone_position
 			essence_of_all_life.set_bone_position = function(self, bone, position, rotation)
 				local r = old_set_bone_position(self, bone, position, rotation)
-				if self:is_player() then 
+				if self:is_player() then
 					wield_redo.do_satanic_stuff(self, bone, rotation)
 				end
 				return r
@@ -275,7 +278,7 @@ if not (wield_redo.systemd and minetestd.services.wield_redo) then -- Do once at
 	})
 	minetest.register_on_leaveplayer(function(player)
 		if wield_redo.player_items[player:get_player_name()] then
-			wield_redo.player_items[player:get_player_name()]:remove() 
+			wield_redo.player_items[player:get_player_name()]:remove()
 		end
 		wield_redo.player_items[player:get_player_name()] = nil
 	end)
@@ -292,7 +295,7 @@ if wield_redo.systemd then
 		minetestd.register_service("wield_redo", {
 			start = function()
 				if minetestd.services.wield_redo.initialized then
-					dofile(minetest.get_modpath("wield_redo").."/init.lua") 
+					dofile(minetest.get_modpath("wield_redo").."/init.lua")
 				end
 				minetestd.services.wield_redo.enabled = true
 				return true
@@ -302,7 +305,7 @@ if wield_redo.systemd then
 				minetestd.services.wield_redo.enabled = false
 				wield_redo.players = {} -- Entities will remove themselves, effectively disabling the mod.
 			end,
-		
+
 		})
 	end
 	minetestd.playerctl.register_playerstep("wield_redo", { -- Safe. Overwrites if reloaded
