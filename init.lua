@@ -48,7 +48,7 @@ wield_redo.itemOffsets = {
 
         [{
               "group:spear"
-        }] = {-30,0.4,1.9,1},
+        }] = {-30,0.4,2.4,1},
 
 	[{
 		"default:pick_wood",
