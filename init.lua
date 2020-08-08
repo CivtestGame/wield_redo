@@ -81,6 +81,8 @@ wield_redo.itemOffsets = {
 		"moreores:hoe_mithril",
 		"group:hoe",
 	}] = {-15,0},
+        [{ "group:scythe" }] = {-15,0},
+        [{ "group:sickle" }] = {-15,0},
 
 	["mobs:net"] = {0,0},
 
