@@ -50,6 +50,14 @@ wield_redo.itemOffsets = {
               "group:spear"
         }] = {-30,0.4,2.4,1},
 
+        [{
+              "group:crossbow"
+        }] = {0,2,1,1.1,0,-45},
+
+        [{
+              "group:bow"
+        }] = {-30,0.4,1.8,-2},
+
 	[{
 		"default:pick_wood",
 		"default:pick_stone",
@@ -161,7 +169,11 @@ wield_redo.update = function(player)
 					) or {65, 0.8, 1.0}
 				)
 				offset[3] = offset[3] or 1.0
-				wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=-0.25,y=3.6+offset[2],z=2.5+(offset[4] or 0)}, {x=90,y=offset[1],z=-90})
+                                offset[4] = offset[4] or 0
+                                offset[5] = offset[5] or 90
+                                offset[6] = offset[6] or -90
+
+				wield_redo.player_items[name]:set_attach(player, wield_redo.handed, {x=-0.25,y=3.6+offset[2],z=2.5+offset[4]}, {x=offset[5],y=offset[1],z=offset[6]})
 				wield_ent:set_properties({textures = {itemname}, visual_size = {x=0.3*offset[3], y=0.3*offset[3]}})
 				if minetest.get_modpath("playeranim") then
 					player:set_bone_position(wield_redo.handed, {x = -3,  y = 5.5,  z = 0}, {x = 0, y = 0, z = 0})
